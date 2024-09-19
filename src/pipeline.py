@@ -12,8 +12,9 @@ def load_pipeline() -> StableDiffusionXLPipeline:
         torch_dtype=torch.float16,
         local_files_only=True,
     ).to("cuda")
+    pipeline.unet.set_default_attn_processor()
     pipeline.unet = torch.compile(pipeline.unet, mode='reduce-overhead', fullgraph=True)
-    pipe.unet.set_attn_processor(AttnProcessor2_0())
+
 
     pipeline(prompt="")
 
