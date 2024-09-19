@@ -1,9 +1,8 @@
 import torch
 from PIL.Image import Image
-from diffusers import StableDiffusionXLPipeline
 from pipelines.models import TextToImageRequest
 from torch import Generator
-from diffusers.models.attention_processor import AttnProcessor2_0
+from diffusers import StableDiffusionXLPipeline
 
 
 def load_pipeline() -> StableDiffusionXLPipeline:
@@ -11,12 +10,13 @@ def load_pipeline() -> StableDiffusionXLPipeline:
         "./models/newdream-sdxl-21",
         torch_dtype=torch.float16,
         local_files_only=True,
-    ).to("cuda")
-    pipeline.unet.set_default_attn_processor()
-    pipeline.unet = torch.compile(pipeline.unet, mode='reduce-overhead', fullgraph=True)
+    ).to("cuda", torch.float16)
+    #pipeline(prompt="")
 
+    # Warmup
+    with torch.inference_mode():
+        pipeline("")
 
-    pipeline(prompt="")
 
     return pipeline
 
@@ -29,5 +29,6 @@ def infer(request: TextToImageRequest, pipeline: StableDiffusionXLPipeline) -> I
         negative_prompt=request.negative_prompt,
         width=request.width,
         height=request.height,
+        num_inference_steps=30,
         generator=generator,
     ).images[0]
