@@ -6,7 +6,7 @@ from torch import Generator
 from tgate import TgateSDXLDeepCacheLoader
 
 GATE_STEP = 10
-INF_STEP= 20
+INF_STEP= 40
 
 def load_pipeline() -> StableDiffusionXLPipeline:
     pipeline = StableDiffusionXLPipeline.from_pretrained(
@@ -20,7 +20,7 @@ def load_pipeline() -> StableDiffusionXLPipeline:
 
     pipeline = TgateSDXLDeepCacheLoader(
                    pipeline,
-                          cache_interval=3,
+                          cache_interval=5,
                                  cache_branch_id=0,
                                  ).to("cuda")
     pipeline(prompt="")
